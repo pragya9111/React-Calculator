@@ -1,8 +1,11 @@
 import React from 'react'
-import Display from '../../components/Display'
+import { useDispatch } from 'react-redux'
+import { type AppDispatch } from '../../app/store'
+import Display from "../../components/Display"
 import Button from '../../components/Button'
 
 const Calculator: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>()
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-transparent">
