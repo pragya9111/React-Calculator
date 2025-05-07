@@ -1,13 +1,10 @@
-import './App.css'
+import Calculator from './features/calculator/Calculator'
 
 function App() {
-
   return (
-    <>
-      <div className='App'>
-        Your  calculator will display here!
-      </div>
-    </>
+    <div className="App">
+      <Calculator />
+    </div>
   )
 }
 
