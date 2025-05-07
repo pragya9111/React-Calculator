@@ -1,12 +1,22 @@
-import React from 'react'
-import { useDispatch } from 'react-redux'
-import { type AppDispatch } from '../../app/store'
-import { addDigit, chooseOperation, clear, deleteDigit, evaluate } from '../../app/calSlice'
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { type AppDispatch, type RootState } from '../../app/store'
+import { addDigit, chooseOperation, clear, deleteDigit, evaluate, clearError } from '../../app/calSlice'
 import Display from '../../components/Display'
 import Button from '../../components/Button'
 
 const Calculator: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>()
+  const { error } = useSelector((state: RootState) => state.calculator as { error: string | null })
+
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => {
+        dispatch(clearError())
+      }, 3000)
+      return () => clearTimeout(timer)
+    }
+  }, [error, dispatch])
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-transparent">

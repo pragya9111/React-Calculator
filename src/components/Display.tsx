@@ -4,7 +4,7 @@ import type { RootState } from '../app/store'
 
 const Display: React.FC = React.memo(() => {
 
-  const { currentValue, previousValue, operation } = useSelector(
+  const { currentValue, previousValue, operation, error } = useSelector(
     (state: RootState) => state.calculator as {
       currentValue: string
       previousValue: string
@@ -15,12 +15,18 @@ const Display: React.FC = React.memo(() => {
 
   return (
     <div className="bg-purple-300 p-4 text-right inset-shadow-sm inset-shadow-indigo-400/50 rounded-lg">
-      <div className="text-grey-600 text-lg h-10">
-        {previousValue} {operation}
-      </div>
-      <div className="text-white text-2xl font-semibold overflow-x-auto">
-        {currentValue}
-      </div>
+      {error ? (
+        <div className="text-red-500 text-md h-6">{error}</div>
+      ) : (
+        <>
+          <div className="text-grey-600 text-lg h-10">
+            {previousValue} {operation}
+          </div>
+          <div className="text-white text-2xl font-semibold overflow-x-auto">
+            {currentValue}
+          </div>
+        </>
+      )}
     </div>
   )
 })
