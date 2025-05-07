@@ -1,11 +1,46 @@
-import React from 'react'
-import { useDispatch } from 'react-redux'
-import { type AppDispatch } from '../../app/store'
-import Display from "../../components/Display"
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { type AppDispatch, type RootState } from '../../app/store'
+import { addDigit, chooseOperation, clear, deleteDigit, evaluate, clearError } from '../../app/calSlice'
+import Display from '../../components/Display'
 import Button from '../../components/Button'
 
 const Calculator: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>()
+  const { error } = useSelector((state: RootState) => state.calculator as { error: string | null })
+
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (e.key >= '0' && e.key <= '9') {
+      dispatch(addDigit(e.key))
+    } else if (e.key === '.') {
+      dispatch(addDigit('.'))
+    } else if (e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/') {
+      const operation = e.key === '*' ? '×' : e.key === '/' ? '÷' : e.key
+      dispatch(chooseOperation(operation))
+    } else if (e.key === 'Enter') {
+      dispatch(evaluate())
+    } else if (e.key === 'Escape') {
+      dispatch(clear())
+    } else if (e.key === 'Backspace') {
+      dispatch(deleteDigit())
+    }
+  }
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown)
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => {
+        dispatch(clearError())
+      }, 3000)
+      return () => clearTimeout(timer)
+    }
+  }, [error, dispatch])
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-transparent">
@@ -16,64 +51,64 @@ const Calculator: React.FC = () => {
           <Button
             value="AC"
             variant="clear"
-            onClick={() => alert('Clear all')}
+            onClick={() => dispatch(clear())}
             className="col-span-2 py-4"
             ariaLabel="All clear"
           />
           <Button
             value="DEL"
             variant="delete"
-            onClick={() => alert('Delete last digit')}
+            onClick={() => dispatch(deleteDigit())}
             className="py-4"
             ariaLabel="Delete"
           />
           <Button
             value="÷"
             variant="operator"
-            onClick={() => alert('Choose division')}
+            onClick={() => dispatch(chooseOperation('÷'))}
             className="py-4"
           />
 
-          <Button value="7" onClick={() => alert("7")} className="py-4" />
-          <Button value="8" onClick={() => alert("8")} className="py-4" />
-          <Button value="9" onClick={() => alert("9")} className="py-4" />
+          <Button value="7" onClick={() => dispatch(addDigit('7'))} className="py-4" />
+          <Button value="8" onClick={() => dispatch(addDigit('8'))} className="py-4" />
+          <Button value="9" onClick={() => dispatch(addDigit('9'))} className="py-4" />
           <Button
             value="×"
             variant="operator"
-            onClick={() => alert("*")}
+            onClick={() => dispatch(chooseOperation('×'))}
             className="py-4"
           />
 
-          <Button value="4" onClick={() => alert("4")} className="py-4" />
-          <Button value="5" onClick={() => alert("5")} className="py-4" />
-          <Button value="6" onClick={() => alert("6")} className="py-4" />
+          <Button value="4" onClick={() => dispatch(addDigit('4'))} className="py-4" />
+          <Button value="5" onClick={() => dispatch(addDigit('5'))} className="py-4" />
+          <Button value="6" onClick={() => dispatch(addDigit('6'))} className="py-4" />
           <Button
             value="-"
             variant="operator"
-            onClick={() => alert("-")}
+            onClick={() => dispatch(chooseOperation('-'))}
             className="py-4"
           />
 
-          <Button value="1" onClick={() => alert("1")} className="py-4" />
-          <Button value="2" onClick={() => alert("2")} className="py-4" />
-          <Button value="3" onClick={() => alert("3")} className="py-4" />
+          <Button value="1" onClick={() => dispatch(addDigit('1'))} className="py-4" />
+          <Button value="2" onClick={() => dispatch(addDigit('2'))} className="py-4" />
+          <Button value="3" onClick={() => dispatch(addDigit('3'))} className="py-4" />
           <Button
             value="+"
             variant="operator"
-            onClick={() => alert("+")}
+            onClick={() => dispatch(chooseOperation('+'))}
             className="py-4"
           />
 
           <Button
             value="0"
-            onClick={() => alert("7")}
+            onClick={() => dispatch(addDigit('0'))}
             className="col-span-2 py-4"
           />
-          <Button value="." onClick={() => alert(".")} className="py-4" />
+          <Button value="." onClick={() => dispatch(addDigit('.'))} className="py-4" />
           <Button
             value="="
             variant="equals"
-            onClick={() => alert("=")}
+            onClick={() => dispatch(evaluate())}
             className="py-4"
           />
         </div>
