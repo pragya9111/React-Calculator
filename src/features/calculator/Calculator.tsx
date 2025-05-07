@@ -9,6 +9,30 @@ const Calculator: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>()
   const { error } = useSelector((state: RootState) => state.calculator as { error: string | null })
 
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (e.key >= '0' && e.key <= '9') {
+      dispatch(addDigit(e.key))
+    } else if (e.key === '.') {
+      dispatch(addDigit('.'))
+    } else if (e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/') {
+      const operation = e.key === '*' ? '×' : e.key === '/' ? '÷' : e.key
+      dispatch(chooseOperation(operation))
+    } else if (e.key === 'Enter') {
+      dispatch(evaluate())
+    } else if (e.key === 'Escape') {
+      dispatch(clear())
+    } else if (e.key === 'Backspace') {
+      dispatch(deleteDigit())
+    }
+  }
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown)
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [])
+
   useEffect(() => {
     if (error) {
       const timer = setTimeout(() => {
