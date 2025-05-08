@@ -10,37 +10,56 @@ const Calculator: React.FC = () => {
   const { error } = useSelector((state: RootState) => state.calculator as { error: string | null })
 
   const handleKeyDown = (e: KeyboardEvent) => {
+    // Handle digit keys (0-9)
     if (e.key >= '0' && e.key <= '9') {
       dispatch(addDigit(e.key))
-    } else if (e.key === '.') {
+    }
+    // Handle decimal point
+    else if (e.key === '.') {
       dispatch(addDigit('.'))
-    } else if (e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/') {
+    }
+    // Handle basic operations: +, -, *, /
+    else if (e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/') {
+      // Convert * and / to × and ÷ for display
       const operation = e.key === '*' ? '×' : e.key === '/' ? '÷' : e.key
       dispatch(chooseOperation(operation))
-    } else if (e.key === 'Enter') {
+    }
+    // Handle Enter key to evaluate expression
+    else if (e.key === 'Enter') {
       dispatch(evaluate())
-    } else if (e.key === 'Escape') {
+    }
+    // Handle Escape key to clear all input
+    else if (e.key === 'Escape') {
       dispatch(clear())
-    } else if (e.key === 'Backspace') {
+    }
+    // Handle Backspace key to delete last digit
+    else if (e.key === 'Backspace') {
       dispatch(deleteDigit())
     }
   }
-
+  
   useEffect(() => {
+    // Add keydown event listener to window on mount
     window.addEventListener('keydown', handleKeyDown)
+  
+    // Remove event listener on unmount to avoid memory leaks
     return () => {
       window.removeEventListener('keydown', handleKeyDown)
     }
-  }, [])
-
+  }, []) // Empty dependency array = run once on mount
+  
   useEffect(() => {
+    // If there's an error, set a timeout to auto-clear it after 3 seconds
     if (error) {
       const timer = setTimeout(() => {
         dispatch(clearError())
       }, 3000)
+  
+      // Clear the timer if the component re-renders before 3 seconds
       return () => clearTimeout(timer)
     }
-  }, [error, dispatch])
+  }, [error, dispatch]) // Run whenever 'error' or 'dispatch' changes
+  
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-transparent">
